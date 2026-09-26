@@ -2,9 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>YT Music - Web Player Mobile Optimized</title>
+  <title>YT Music - Modern Player</title>
 
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,8 +13,8 @@
   <style>
     :root {
       --bg-color: #060608;
-      --card-bg: rgba(18, 18, 24, 0.85);
-      --border-color: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(18, 18, 24, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
       --accent-color: #ff0033;
       --accent-glow: rgba(255, 0, 51, 0.5);
       --text-main: #ffffff;
@@ -40,7 +40,7 @@
       position: relative;
     }
 
-    /* Visualiseur Arrière-plan */
+    /* Visualiseur réactif en arrière-plan */
     #visualizer-canvas {
       position: fixed;
       top: 0;
@@ -49,86 +49,91 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.8;
+      opacity: 0.85;
     }
 
-    /* Header */
+    /* En-tête */
     header {
       width: 100%;
       max-width: 1400px;
-      padding: 12px 16px;
+      padding: 20px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
+      gap: 12px;
+      font-size: 1.4rem;
       font-weight: 800;
     }
 
     .brand i {
       color: var(--accent-color);
-      font-size: 1.4rem;
-      text-shadow: 0 0 10px var(--accent-glow);
+      font-size: 1.8rem;
+      text-shadow: 0 0 15px var(--accent-glow);
     }
 
     .playlist-tabs {
       display: flex;
       background: rgba(255, 255, 255, 0.05);
-      padding: 3px;
-      border-radius: 20px;
+      padding: 4px;
+      border-radius: 30px;
       border: 1px solid var(--border-color);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
+      overflow-x: auto;
+      max-width: 100%;
     }
 
     .tab-btn {
       background: transparent;
       color: var(--text-muted);
       border: none;
-      padding: 6px 12px;
-      border-radius: 16px;
+      padding: 8px 18px;
+      border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       white-space: nowrap;
+      transition: all 0.3s ease;
     }
 
     .tab-btn.active {
       background: var(--text-main);
       color: #000;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
     }
 
-    /* Grille principale */
+    /* Disposition Principale Côte à Côte */
     main {
       width: 100%;
       max-width: 1400px;
-      padding: 10px 16px 80px; /* Espace pour la navbar mobile */
+      padding: 10px 24px 40px;
       z-index: 10;
       display: grid;
       grid-template-columns: 1fr 420px;
-      gap: 20px;
+      gap: 25px;
     }
 
     .player-section {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;
     }
 
     .video-container {
       position: relative;
       width: 100%;
-      padding-top: 56.25%;
-      border-radius: 16px;
+      padding-top: 56.25%; /* Ratio 16:9 */
+      border-radius: 20px;
       overflow: hidden;
       background: #000;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
       border: 1px solid var(--border-color);
     }
 
@@ -145,42 +150,42 @@
     .controls-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 20px;
+      padding: 22px;
       backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
-    /* CORRECTION DU TITRE EN FLEXBOX */
+    /* FIXATION DE L'AFFICHAGE DU TITRE */
     .track-meta-now {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       width: 100%;
-      min-width: 0; /* Empêche le débordement Flexbox */
+      min-width: 0; /* Empêche Flexbox de casser */
     }
 
     .cover-art {
-      width: 56px;
-      height: 56px;
-      border-radius: 10px;
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
       object-fit: cover;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     .song-details {
       flex: 1;
-      min-width: 0; /* CORRECTION CLÉ : Permet à l'ellipsis de fonctionner */
+      min-width: 0; /* Autorise la réduction propre */
     }
 
     .song-details h2 {
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 700;
       color: #fff;
-      line-height: 1.3;
+      line-height: 1.35;
       /* Affichage propre sur 2 lignes max */
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -191,26 +196,24 @@
     }
 
     .song-details p {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Barre de progression tactile */
     .progress-container {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 4px 0;
+      gap: 12px;
     }
 
     .time-label {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      width: 35px;
+      width: 40px;
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
@@ -219,8 +222,8 @@
       flex: 1;
       -webkit-appearance: none;
       appearance: none;
-      height: 8px; /* Plus épais pour les doigts sur mobile */
-      border-radius: 4px;
+      height: 6px;
+      border-radius: 3px;
       background: rgba(255, 255, 255, 0.15);
       outline: none;
       cursor: pointer;
@@ -229,10 +232,11 @@
     .progress-bar::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: var(--accent-color);
+      cursor: pointer;
       box-shadow: 0 0 10px var(--accent-glow);
     }
 
@@ -240,12 +244,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .playback-buttons {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .ctrl-btn {
@@ -260,14 +266,20 @@
       justify-content: center;
       cursor: pointer;
       font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.05);
     }
 
     .ctrl-btn.play-btn {
       background: var(--accent-color);
-      width: 50px;
-      height: 50px;
+      width: 52px;
+      height: 52px;
       font-size: 1.2rem;
-      box-shadow: 0 0 15px var(--accent-glow);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
 
     .ctrl-btn.active-mode {
@@ -285,10 +297,12 @@
     .volume-slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 70px;
+      width: 80px;
       height: 4px;
       border-radius: 2px;
       background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      cursor: pointer;
     }
 
     .volume-slider::-webkit-slider-thumb {
@@ -300,36 +314,53 @@
       background: #fff;
     }
 
-    /* Tracklist Card */
+    /* Tracklist Side Card */
     .tracklist-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 18px;
-      padding: 16px;
+      border-radius: 20px;
+      padding: 20px;
       backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 100px);
-      max-height: 750px;
+      height: calc(100vh - 120px);
+      max-height: 760px;
+      position: sticky;
+      top: 20px;
     }
 
     .tracklist-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 10px;
+      padding-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
     }
 
+    .tracklist-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .tracklist-header span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
     .search-box {
-      margin: 10px 0;
+      margin: 12px 0;
       display: flex;
       align-items: center;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 8px 12px;
       gap: 8px;
+    }
+
+    .search-box i {
+      color: var(--text-muted);
+      font-size: 0.85rem;
     }
 
     .search-box input {
@@ -347,7 +378,17 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      padding-right: 4px;
       flex: 1;
+    }
+
+    .tracklist::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .tracklist::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
 
     .track-item {
@@ -355,9 +396,14 @@
       align-items: center;
       gap: 10px;
       padding: 8px;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       min-width: 0;
+      transition: background 0.2s ease;
+    }
+
+    .track-item:hover {
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .track-item.active {
@@ -368,14 +414,19 @@
     .track-num {
       font-size: 0.75rem;
       color: var(--text-muted);
-      width: 20px;
+      width: 24px;
       text-align: center;
       flex-shrink: 0;
     }
 
+    .track-item.active .track-num {
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
     .track-thumb {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 6px;
       object-fit: cover;
       flex-shrink: 0;
@@ -383,7 +434,7 @@
 
     .track-info {
       flex: 1;
-      min-width: 0; /* CORRECTION Ellipsis dans la liste */
+      min-width: 0;
     }
 
     .track-title {
@@ -400,14 +451,21 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 2px;
     }
 
     .track-item.active .track-title {
       color: var(--accent-color);
     }
 
+    .track-duration {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
     .input-box {
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       gap: 6px;
       background: rgba(255, 255, 255, 0.03);
@@ -421,7 +479,7 @@
       border: none;
       outline: none;
       color: #fff;
-      padding: 6px 10px;
+      padding: 6px 12px;
       font-size: 0.8rem;
       width: 100%;
     }
@@ -430,103 +488,49 @@
       background: rgba(255, 255, 255, 0.1);
       border: none;
       color: #fff;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 16px;
+      cursor: pointer;
       font-size: 0.75rem;
       font-weight: 600;
+      white-space: nowrap;
     }
 
-    /* BARRE DE NAVIGATION MOBILE FIXE EN BAS */
-    .mobile-bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(10, 10, 14, 0.95);
-      border-top: 1px solid var(--border-color);
-      backdrop-filter: blur(15px);
-      z-index: 100;
-      padding: 8px 16px;
-      justify-content: space-around;
-    }
-
-    .nav-tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 6px 16px;
-      border-radius: 12px;
-    }
-
-    .nav-tab-btn i {
-      font-size: 1.1rem;
-    }
-
-    .nav-tab-btn.active {
-      color: var(--accent-color);
-      background: rgba(255, 0, 51, 0.1);
-    }
-
-    /* ADAPTATION MOBILE ÉCRAN (< 768px) */
-    @media (max-width: 768px) {
-      .mobile-bottom-nav {
-        display: flex;
-      }
-
+    /* Adaptabilité simple pour mobile (Empilement naturel sans rien cacher) */
+    @media (max-width: 900px) {
       main {
         grid-template-columns: 1fr;
-        padding-bottom: 75px;
       }
-
-      /* Affichage alterné Lecteur vs Tracklist sur Mobile */
-      .player-section {
-        display: flex;
-      }
-
       .tracklist-card {
-        display: none;
-        height: calc(100vh - 140px);
-      }
-
-      body.show-tracklist-view .player-section {
-        display: none;
-      }
-
-      body.show-tracklist-view .tracklist-card {
-        display: flex;
-      }
-
-      .volume-container {
-        display: none; /* Masqué sur très petits écrans pour libérer de l'espace */
+        height: 520px;
+        position: static;
       }
     }
   </style>
 </head>
 <body>
 
+  <!-- Background Amplitude Canvas -->
   <canvas id="visualizer-canvas"></canvas>
 
   <header>
     <div class="brand">
       <i class="fa-brands fa-youtube"></i>
-      <span>YT Music</span>
+      <span>YT Music Player</span>
     </div>
 
     <div class="playlist-tabs">
-      <button class="tab-btn active" onclick="switchPlaylist('PLe6uecFqdHnZjeHOT-uBDj0OKjmSgGsdt', this)">🔥 Sélection (1k)</button>
-      <button class="tab-btn" onclick="switchPlaylist('PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj', this)">🎧 Hits Pop</button>
+      <button class="tab-btn active" onclick="switchPlaylist('PLe6uecFqdHnZjeHOT-uBDj0OKjmSgGsdt', this)">
+        🔥 Playlist 1 (Ta Sélection)
+      </button>
+      <button class="tab-btn" onclick="switchPlaylist('PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj', this)">
+        🎧 Playlist 2 (Hits Pop)
+      </button>
     </div>
   </header>
 
   <main>
-    <!-- Section Lecteur -->
+    <!-- Colonne Gauche : Lecteur & Commandes -->
     <section class="player-section">
       <div class="video-container">
         <div id="player"></div>
@@ -534,7 +538,7 @@
 
       <div class="controls-card">
         <div class="track-meta-now">
-          <img id="cover-art" class="cover-art" src="https://via.placeholder.com/56" alt="Pochette">
+          <img id="cover-art" class="cover-art" src="https://via.placeholder.com/60" alt="Pochette">
           <div class="song-details">
             <h2 id="song-title">Chargement des 1 000 titres...</h2>
             <p id="song-artist">Veuillez patienter...</p>
@@ -549,10 +553,18 @@
 
         <div class="action-bar">
           <div class="playback-buttons">
-            <button class="ctrl-btn" onclick="prevTrack()"><i class="fa-solid fa-backward-step"></i></button>
-            <button class="ctrl-btn play-btn" id="play-pause-btn" onclick="togglePlay()"><i class="fa-solid fa-play"></i></button>
-            <button class="ctrl-btn" onclick="nextTrack()"><i class="fa-solid fa-forward-step"></i></button>
-            <button class="ctrl-btn" id="shuffle-btn" onclick="toggleShuffle()"><i class="fa-solid fa-shuffle"></i></button>
+            <button class="ctrl-btn" onclick="prevTrack()" title="Précédent">
+              <i class="fa-solid fa-backward-step"></i>
+            </button>
+            <button class="ctrl-btn play-btn" id="play-pause-btn" onclick="togglePlay()" title="Lecture/Pause">
+              <i class="fa-solid fa-play"></i>
+            </button>
+            <button class="ctrl-btn" onclick="nextTrack()" title="Suivant">
+              <i class="fa-solid fa-forward-step"></i>
+            </button>
+            <button class="ctrl-btn" id="shuffle-btn" onclick="toggleShuffle()" title="Lecture Aléatoire">
+              <i class="fa-solid fa-shuffle"></i>
+            </button>
           </div>
 
           <div class="volume-container">
@@ -563,7 +575,7 @@
       </div>
     </section>
 
-    <!-- Section Tracklist -->
+    <!-- Colonne Droite : Tracklist Réelle 1000+ morceaux -->
     <section class="tracklist-card">
       <div class="tracklist-header">
         <h3>Tracklist</h3>
@@ -583,18 +595,6 @@
       </div>
     </section>
   </main>
-
-  <!-- Barre de Navigation Fixe en Bas pour Mobile -->
-  <nav class="mobile-bottom-nav">
-    <button class="nav-tab-btn active" id="btn-nav-player" onclick="setMobileView('player')">
-      <i class="fa-solid fa-compact-disc"></i>
-      <span>Lecteur</span>
-    </button>
-    <button class="nav-tab-btn" id="btn-nav-tracklist" onclick="setMobileView('tracklist')">
-      <i class="fa-solid fa-list-ul"></i>
-      <span>Tracklist</span>
-    </button>
-  </nav>
 
   <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -622,12 +622,13 @@
     function renderAudioVisualizer() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const centerX = canvas.width / 2;
-      const centerY = canvas.height * 0.3;
-      const amplitude = isPlaying ? (Math.sin(audioPhase * 3) * 0.4 + 0.6) : 0.12;
-      const pulseRadius = 150 + amplitude * 100;
+      const centerY = canvas.height * 0.35;
+      const amplitude = isPlaying ? (Math.sin(audioPhase * 3) * 0.4 + 0.6) : 0.15;
+      const pulseRadius = 180 + amplitude * 120;
 
       const gradient = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, pulseRadius * 2);
-      gradient.addColorStop(0, `rgba(255, 0, 51, ${0.22 * amplitude})`);
+      gradient.addColorStop(0, `rgba(255, 0, 51, ${0.25 * amplitude})`);
+      gradient.addColorStop(0.5, `rgba(120, 0, 40, ${0.12 * amplitude})`);
       gradient.addColorStop(1, 'rgba(6, 6, 8, 0)');
 
       ctx.fillStyle = gradient;
@@ -728,11 +729,7 @@
         const li = document.createElement('li');
         li.className = `track-item ${originalIndex === currentTrackIndex ? 'active' : ''}`;
         li.id = `track-item-${originalIndex}`;
-        li.onclick = () => {
-          playTrackAtIndex(originalIndex);
-          // Si sur mobile, rebasculer automatiquement vers l'écran lecteur
-          if (window.innerWidth <= 768) setMobileView('player');
-        };
+        li.onclick = () => playTrackAtIndex(originalIndex);
 
         li.innerHTML = `
           <span class="track-num">${originalIndex + 1}</span>
@@ -741,6 +738,7 @@
             <div class="track-title">${track.title}</div>
             <div class="track-artist">${track.artist}</div>
           </div>
+          <div class="track-duration">${track.duration}</div>
         `;
         container.appendChild(li);
       });
@@ -870,22 +868,6 @@
       if (playlistId) {
         switchPlaylist(playlistId, null);
         document.getElementById('playlist-url-input').value = '';
-      }
-    }
-
-    // 5. GESTION NAVIGATION MOBILE (ONGLETS BAS DE PAGE)
-    function setMobileView(viewName) {
-      const btnPlayer = document.getElementById('btn-nav-player');
-      const btnTracklist = document.getElementById('btn-nav-tracklist');
-
-      if (viewName === 'tracklist') {
-        document.body.classList.add('show-tracklist-view');
-        btnTracklist.classList.add('active');
-        btnPlayer.classList.remove('active');
-      } else {
-        document.body.classList.remove('show-tracklist-view');
-        btnPlayer.classList.add('active');
-        btnTracklist.classList.remove('active');
       }
     }
   </script>
