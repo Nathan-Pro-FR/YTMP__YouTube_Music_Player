@@ -13,8 +13,8 @@
   <style>
     :root {
       --bg-color: #060608;
-      --card-bg: rgba(18, 18, 24, 0.75);
-      --border-color: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(18, 18, 24, 0.85);
+      --border-color: rgba(255, 255, 255, 0.1);
       --accent-color: #ff0033;
       --accent-glow: rgba(255, 0, 51, 0.5);
       --text-main: #ffffff;
@@ -38,6 +38,7 @@
       align-items: center;
       overflow-x: hidden;
       position: relative;
+      width: 100%;
     }
 
     /* Halo lumineux d'arrière-plan */
@@ -49,58 +50,59 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.85;
+      opacity: 0.8;
     }
 
     /* En-tête */
     header {
       width: 100%;
       max-width: 1400px;
-      padding: 20px 24px;
+      padding: 16px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 10;
-      flex-wrap: wrap;
-      gap: 15px;
+      gap: 12px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 1.4rem;
+      gap: 10px;
+      font-size: 1.3rem;
       font-weight: 800;
+      white-space: nowrap;
     }
 
     .brand i {
       color: var(--accent-color);
-      font-size: 1.8rem;
-      text-shadow: 0 0 15px var(--accent-glow);
+      font-size: 1.6rem;
+      text-shadow: 0 0 12px var(--accent-glow);
     }
 
     .playlist-tabs {
       display: flex;
       background: rgba(255, 255, 255, 0.05);
       padding: 4px;
-      border-radius: 30px;
+      border-radius: 25px;
       border: 1px solid var(--border-color);
       backdrop-filter: blur(12px);
       overflow-x: auto;
       max-width: 100%;
+      -webkit-overflow-scrolling: touch;
     }
 
     .tab-btn {
       background: transparent;
       color: var(--text-muted);
       border: none;
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
       font-size: 0.85rem;
       white-space: nowrap;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
     }
 
     .tab-btn.active {
@@ -109,31 +111,33 @@
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
     }
 
-    /* Grille Principale */
+    /* Disposition Principale */
     main {
       width: 100%;
       max-width: 1400px;
-      padding: 10px 24px 40px;
+      padding: 10px 20px 40px;
       z-index: 10;
       display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 25px;
+      grid-template-columns: 1fr 400px;
+      gap: 20px;
     }
 
     .player-section {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
+      width: 100%;
+      min-width: 0;
     }
 
     .video-container {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 */
-      border-radius: 20px;
+      padding-top: 56.25%; /* Ratio 16:9 */
+      border-radius: 18px;
       overflow: hidden;
       background: #000;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
       border: 1px solid var(--border-color);
     }
 
@@ -150,28 +154,30 @@
     .controls-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 22px;
+      border-radius: 18px;
+      padding: 20px;
       backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-    }
-
-    .track-meta-now {
-      display: flex;
-      align-items: center;
       gap: 16px;
       width: 100%;
       min-width: 0;
     }
 
+    .track-meta-now {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      min-width: 0;
+    }
+
     .cover-art {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
+      width: 58px;
+      height: 58px;
+      border-radius: 10px;
       object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
       flex-shrink: 0;
     }
 
@@ -181,10 +187,10 @@
     }
 
     .song-details h2 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: #fff;
-      line-height: 1.35;
+      line-height: 1.3;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -194,9 +200,9 @@
     }
 
     .song-details p {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
-      margin-top: 3px;
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -205,15 +211,17 @@
     .progress-container {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      width: 100%;
     }
 
     .time-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      width: 40px;
+      width: 38px;
       text-align: center;
       font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
     }
 
     .progress-bar {
@@ -244,12 +252,13 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 12px;
+      width: 100%;
     }
 
     .playback-buttons {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
     .ctrl-btn {
@@ -263,21 +272,21 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
-    .ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.18);
-      transform: scale(1.05);
+    .ctrl-btn:active {
+      transform: scale(0.92);
     }
 
     .ctrl-btn.play-btn {
       background: var(--accent-color);
       width: 52px;
       height: 52px;
-      font-size: 1.2rem;
-      box-shadow: 0 0 20px var(--accent-glow);
+      font-size: 1.15rem;
+      box-shadow: 0 0 18px var(--accent-glow);
     }
 
     .ctrl-btn.active-mode {
@@ -295,7 +304,7 @@
     .volume-slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 80px;
+      width: 75px;
       height: 4px;
       border-radius: 2px;
       background: rgba(255, 255, 255, 0.2);
@@ -316,43 +325,44 @@
     .tracklist-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 18px;
       backdrop-filter: blur(20px);
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 120px);
-      max-height: 760px;
+      height: calc(100vh - 110px);
+      max-height: 740px;
       position: sticky;
-      top: 20px;
+      top: 16px;
+      min-width: 0;
     }
 
     .tracklist-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
 
     .tracklist-header h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
     }
 
     .tracklist-header span {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
 
     .search-box {
-      margin: 12px 0;
+      margin: 10px 0;
       display: flex;
       align-items: center;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 8px 12px;
+      border-radius: 10px;
+      padding: 8px 10px;
       gap: 8px;
     }
 
@@ -366,7 +376,7 @@
       border: none;
       outline: none;
       color: #fff;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       width: 100%;
     }
 
@@ -378,10 +388,11 @@
       gap: 6px;
       padding-right: 4px;
       flex: 1;
+      -webkit-overflow-scrolling: touch;
     }
 
     .tracklist::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
     }
 
     .tracklist::-webkit-scrollbar-thumb {
@@ -394,14 +405,14 @@
       align-items: center;
       gap: 10px;
       padding: 8px;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       min-width: 0;
-      transition: background 0.2s ease;
+      transition: background 0.15s ease;
     }
 
-    .track-item:hover {
-      background: rgba(255, 255, 255, 0.06);
+    .track-item:hover, .track-item:active {
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .track-item.active {
@@ -412,7 +423,7 @@
     .track-num {
       font-size: 0.75rem;
       color: var(--text-muted);
-      width: 24px;
+      width: 22px;
       text-align: center;
       flex-shrink: 0;
     }
@@ -423,8 +434,8 @@
     }
 
     .track-thumb {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 6px;
       object-fit: cover;
       flex-shrink: 0;
@@ -436,7 +447,7 @@
     }
 
     .track-title {
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -444,7 +455,7 @@
     }
 
     .track-artist {
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
@@ -457,18 +468,18 @@
     }
 
     .track-duration {
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       color: var(--text-muted);
       flex-shrink: 0;
     }
 
     .input-box {
-      margin-top: 12px;
+      margin-top: 10px;
       display: flex;
       gap: 6px;
       background: rgba(255, 255, 255, 0.03);
       padding: 4px;
-      border-radius: 20px;
+      border-radius: 18px;
       border: 1px solid var(--border-color);
     }
 
@@ -477,8 +488,8 @@
       border: none;
       outline: none;
       color: #fff;
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      padding: 6px 10px;
+      font-size: 0.78rem;
       width: 100%;
     }
 
@@ -486,21 +497,81 @@
       background: rgba(255, 255, 255, 0.1);
       border: none;
       color: #fff;
-      padding: 6px 14px;
-      border-radius: 16px;
+      padding: 6px 12px;
+      border-radius: 14px;
       cursor: pointer;
       font-size: 0.75rem;
       font-weight: 600;
       white-space: nowrap;
     }
 
-    @media (max-width: 900px) {
+    /* -------------------------------------------------------------
+       REGLES CSS SPECIFIQUES POUR SMARTPHONES ET TABLETTES
+       ------------------------------------------------------------- */
+    @media (max-width: 850px) {
+      header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 14px;
+        gap: 10px;
+      }
+
+      .brand {
+        justify-content: center;
+      }
+
+      .playlist-tabs {
+        justify-content: center;
+        width: 100%;
+      }
+
       main {
         grid-template-columns: 1fr;
+        padding: 10px 14px 30px;
+        gap: 16px;
       }
+
       .tracklist-card {
-        height: 520px;
+        height: auto;
+        max-height: 480px;
         position: static;
+      }
+
+      .tracklist {
+        max-height: 320px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .controls-card {
+        padding: 14px;
+        gap: 12px;
+      }
+
+      .action-bar {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .playback-buttons {
+        justify-content: center;
+        width: 100%;
+        gap: 10px;
+      }
+
+      .volume-container {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .volume-slider {
+        flex: 1;
+        max-width: 180px;
+      }
+
+      .tab-btn {
+        padding: 6px 12px;
+        font-size: 0.78rem;
       }
     }
   </style>
@@ -636,7 +707,7 @@
     }
     renderAudioVisualizer();
 
-    // 2. EXTRACTION DIRECTE DE TOUS LES MORCEAUX (1000+)
+    // 2. EXTRACTION MULTI-SOURCE DE LA PLAYLIST
     async function fetchFullPlaylist(playlistId) {
       const targetUrl = `https://www.youtube.com/playlist?list=${playlistId}`;
       const proxies = [
@@ -646,7 +717,7 @@
 
       for (const proxyUrl of proxies) {
         try {
-          const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+          const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(5000) });
           if (!res.ok) continue;
           const html = await res.text();
 
@@ -656,12 +727,9 @@
             const tracks = parseYtInitialData(data);
             if (tracks && tracks.length > 0) return tracks;
           }
-        } catch (e) {
-          console.warn('Echec du proxy, essai du suivant...', e);
-        }
+        } catch (e) {}
       }
 
-      // Fallback vers API Piped/Invidious
       const fallbackMirrors = [
         `https://pipedapi.kavin.rocks/playlists/${playlistId}`,
         `https://inv.nadeko.net/api/v1/playlists/${playlistId}`
@@ -722,7 +790,7 @@
       }
     }
 
-    // 3. INITIALISATION DU LECTEUR YOUTUBE SANS SOUS-TITRES
+    // 3. INITIALISATION DU LECTEUR SANS SOUS-TITRES
     function onYouTubeIframeAPIReady() {
       const currentOrigin = (window.location.origin && window.location.origin !== 'null') 
         ? window.location.origin : 'https://www.youtube.com';
@@ -734,8 +802,8 @@
           list: activePlaylistId,
           autoplay: 0,
           controls: 0,
-          cc_load_policy: 0,  // <--- DESACTIVE LES SOUS-TITRES ([Music])
-          iv_load_policy: 3,  // <--- DESACTIVE LES ANNOTATIONS
+          cc_load_policy: 0,
+          iv_load_policy: 3,
           disablekb: 1,
           modestbranding: 1,
           rel: 0,
@@ -757,15 +825,12 @@
           player.unloadModule('captions');
           player.unloadModule('cc');
         }
-        if (player.setOption) {
-          player.setOption('captions', 'track', {});
-        }
       } catch (e) {}
     }
 
     async function loadPlaylistMetadata(playlistId) {
-      document.getElementById('song-title').textContent = "Chargement des 1 000 titres...";
-      document.getElementById('song-artist').textContent = "Récupération des métadonnées...";
+      document.getElementById('song-title').textContent = "Chargement des morceaux...";
+      document.getElementById('song-artist').textContent = "Récupération des données...";
 
       const tracks = await fetchFullPlaylist(playlistId);
 
@@ -854,7 +919,6 @@
       const duration = player.getDuration ? player.getDuration() : 0;
       const track = currentPlaylistTracks[currentTrackIndex] || currentPlaylistTracks[0];
 
-      // Mise à jour dynamique avec les vrais titres du lecteur
       if (ytData && ytData.title && ytData.video_id) {
         if (track) {
           if (ytData.title) track.title = ytData.title;
@@ -878,7 +942,7 @@
       }
     }
 
-    // 4. BOUCLE DE PROGRESSION ET CONTRÔLES
+    // 4. PROGRESSION ET CONTRÔLES
     function startProgressLoop() {
       stopProgressLoop();
       progressTimer = setInterval(() => {
