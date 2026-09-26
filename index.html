@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>YT Music - Modern Player</title>
+  <title>YT Music - Web Player</title>
 
   <!-- Google Fonts & FontAwesome Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
       position: relative;
     }
 
-    /* Visualiseur réactif en arrière-plan */
+    /* Halo lumineux d'arrière-plan */
     #visualizer-canvas {
       position: fixed;
       top: 0;
@@ -109,7 +109,7 @@
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
     }
 
-    /* Disposition Principale Côte à Côte */
+    /* Grille Principale */
     main {
       width: 100%;
       max-width: 1400px;
@@ -129,7 +129,7 @@
     .video-container {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* Ratio 16:9 */
+      padding-top: 56.25%; /* 16:9 */
       border-radius: 20px;
       overflow: hidden;
       background: #000;
@@ -158,13 +158,12 @@
       gap: 16px;
     }
 
-    /* FIXATION DE L'AFFICHAGE DU TITRE */
     .track-meta-now {
       display: flex;
       align-items: center;
       gap: 16px;
       width: 100%;
-      min-width: 0; /* Empêche Flexbox de casser */
+      min-width: 0;
     }
 
     .cover-art {
@@ -178,7 +177,7 @@
 
     .song-details {
       flex: 1;
-      min-width: 0; /* Autorise la réduction propre */
+      min-width: 0;
     }
 
     .song-details h2 {
@@ -186,7 +185,6 @@
       font-weight: 700;
       color: #fff;
       line-height: 1.35;
-      /* Affichage propre sur 2 lignes max */
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -314,7 +312,7 @@
       background: #fff;
     }
 
-    /* Tracklist Side Card */
+    /* Carte Tracklist Latérale */
     .tracklist-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -496,7 +494,6 @@
       white-space: nowrap;
     }
 
-    /* Adaptabilité simple pour mobile (Empilement naturel sans rien cacher) */
     @media (max-width: 900px) {
       main {
         grid-template-columns: 1fr;
@@ -510,7 +507,7 @@
 </head>
 <body>
 
-  <!-- Background Amplitude Canvas -->
+  <!-- Arrière-plan animé -->
   <canvas id="visualizer-canvas"></canvas>
 
   <header>
@@ -530,7 +527,7 @@
   </header>
 
   <main>
-    <!-- Colonne Gauche : Lecteur & Commandes -->
+    <!-- Section Lecteur & Contrôles -->
     <section class="player-section">
       <div class="video-container">
         <div id="player"></div>
@@ -540,7 +537,7 @@
         <div class="track-meta-now">
           <img id="cover-art" class="cover-art" src="https://via.placeholder.com/60" alt="Pochette">
           <div class="song-details">
-            <h2 id="song-title">Chargement des 1 000 titres...</h2>
+            <h2 id="song-title">Chargement des morceaux...</h2>
             <p id="song-artist">Veuillez patienter...</p>
           </div>
         </div>
@@ -575,7 +572,7 @@
       </div>
     </section>
 
-    <!-- Colonne Droite : Tracklist Réelle 1000+ morceaux -->
+    <!-- Section Tracklist Latérale -->
     <section class="tracklist-card">
       <div class="tracklist-header">
         <h3>Tracklist</h3>
@@ -584,7 +581,7 @@
 
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="search-input" placeholder="Rechercher parmi les 1 000 titres..." oninput="filterTracklist()">
+        <input type="text" id="search-input" placeholder="Rechercher un titre ou un artiste..." oninput="filterTracklist()">
       </div>
 
       <ul id="tracklist-container" class="tracklist"></ul>
@@ -607,7 +604,7 @@
     let currentTrackIndex = 0;
     let activePlaylistId = 'PLe6uecFqdHnZjeHOT-uBDj0OKjmSgGsdt';
 
-    // 1. VISUALISEUR ARRIÈRE-PLAN
+    // 1. VISUALISEUR D'AMPLITUDE EN FOND
     const canvas = document.getElementById('visualizer-canvas');
     const ctx = canvas.getContext('2d');
     let audioPhase = 0;
@@ -639,27 +636,50 @@
     }
     renderAudioVisualizer();
 
-    // 2. RÉCUPÉRATION DES 1000 TITRES
+    // 2. EXTRACTION DIRECTE DE TOUS LES MORCEAUX (1000+)
     async function fetchFullPlaylist(playlistId) {
-      const apiMirrors = [
+      const targetUrl = `https://www.youtube.com/playlist?list=${playlistId}`;
+      const proxies = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+      ];
+
+      for (const proxyUrl of proxies) {
+        try {
+          const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(6000) });
+          if (!res.ok) continue;
+          const html = await res.text();
+
+          const match = html.match(/var ytInitialData = ({.*?});<\/script>/s) || html.match(/ytInitialData\s*=\s*({.*?});/s);
+          if (match && match[1]) {
+            const data = JSON.parse(match[1]);
+            const tracks = parseYtInitialData(data);
+            if (tracks && tracks.length > 0) return tracks;
+          }
+        } catch (e) {
+          console.warn('Echec du proxy, essai du suivant...', e);
+        }
+      }
+
+      // Fallback vers API Piped/Invidious
+      const fallbackMirrors = [
         `https://pipedapi.kavin.rocks/playlists/${playlistId}`,
-        `https://api.piped.video/playlists/${playlistId}`,
         `https://inv.nadeko.net/api/v1/playlists/${playlistId}`
       ];
 
-      for (const url of apiMirrors) {
+      for (const url of fallbackMirrors) {
         try {
           const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
           if (!res.ok) continue;
           const data = await res.json();
-
-          if (data.relatedStreams && data.relatedStreams.length > 0) {
-            return data.relatedStreams.map(item => ({
-              id: item.url.replace('/watch?v=', ''),
+          const items = data.relatedStreams || data.videos;
+          if (items && items.length > 0) {
+            return items.map(item => ({
+              id: item.videoId || item.url?.replace('/watch?v=', ''),
               title: item.title,
-              artist: item.uploaderName || 'Artiste YouTube',
-              duration: item.duration > 0 ? formatTime(item.duration) : '--:--',
-              thumbnail: item.thumbnail || `https://img.youtube.com/vi/${item.url.replace('/watch?v=', '')}/mqdefault.jpg`
+              artist: item.uploaderName || item.author || 'Artiste YouTube',
+              duration: item.duration > 0 ? formatTime(item.duration) : (item.lengthSeconds ? formatTime(item.lengthSeconds) : '--:--'),
+              thumbnail: item.thumbnail || `https://img.youtube.com/vi/${item.videoId || item.url?.replace('/watch?v=', '')}/mqdefault.jpg`
             }));
           }
         } catch (e) {}
@@ -667,7 +687,42 @@
       return null;
     }
 
-    // 3. YOUTUBE IFRAME PLAYER
+    function parseYtInitialData(data) {
+      try {
+        let videoList = null;
+        const tabs = data?.contents?.twoColumnBrowseResultsRenderer?.tabs;
+        if (tabs) {
+          for (const tab of tabs) {
+            const contents = tab?.tabRenderer?.content?.sectionListRenderer?.contents;
+            if (contents) {
+              for (const c of contents) {
+                const vList = c?.itemSectionRenderer?.contents?.[0]?.playlistVideoListRenderer?.contents;
+                if (vList) { videoList = vList; break; }
+              }
+            }
+          }
+        }
+        if (!videoList) return null;
+
+        const tracks = [];
+        for (const item of videoList) {
+          const v = item.playlistVideoRenderer;
+          if (!v || !v.videoId) continue;
+
+          const title = v.title?.runs?.[0]?.text || v.title?.simpleText || "Titre inconnu";
+          const artist = v.shortBylineText?.runs?.[0]?.text || v.ownerText?.runs?.[0]?.text || "Artiste YouTube";
+          const duration = v.lengthText?.simpleText || (v.lengthSeconds ? formatTime(v.lengthSeconds) : "--:--");
+          const thumbnail = v.thumbnail?.thumbnails?.[0]?.url || `https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg`;
+
+          tracks.push({ id: v.videoId, title, artist, duration, thumbnail });
+        }
+        return tracks.length > 0 ? tracks : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // 3. INITIALISATION DU LECTEUR YOUTUBE SANS SOUS-TITRES
     function onYouTubeIframeAPIReady() {
       const currentOrigin = (window.location.origin && window.location.origin !== 'null') 
         ? window.location.origin : 'https://www.youtube.com';
@@ -679,6 +734,8 @@
           list: activePlaylistId,
           autoplay: 0,
           controls: 0,
+          cc_load_policy: 0,  // <--- DESACTIVE LES SOUS-TITRES ([Music])
+          iv_load_policy: 3,  // <--- DESACTIVE LES ANNOTATIONS
           disablekb: 1,
           modestbranding: 1,
           rel: 0,
@@ -686,14 +743,29 @@
         },
         events: {
           'onStateChange': onPlayerStateChange,
-          'onReady': () => loadPlaylistMetadata(activePlaylistId)
+          'onReady': () => {
+            disableCaptions();
+            loadPlaylistMetadata(activePlaylistId);
+          }
         }
       });
     }
 
+    function disableCaptions() {
+      try {
+        if (player.unloadModule) {
+          player.unloadModule('captions');
+          player.unloadModule('cc');
+        }
+        if (player.setOption) {
+          player.setOption('captions', 'track', {});
+        }
+      } catch (e) {}
+    }
+
     async function loadPlaylistMetadata(playlistId) {
       document.getElementById('song-title').textContent = "Chargement des 1 000 titres...";
-      document.getElementById('song-artist').textContent = "Veuillez patienter...";
+      document.getElementById('song-artist').textContent = "Récupération des métadonnées...";
 
       const tracks = await fetchFullPlaylist(playlistId);
 
@@ -703,8 +775,8 @@
         const ids = player.getPlaylist() || [];
         currentPlaylistTracks = ids.map((id, index) => ({
           id: id,
-          title: `Titre #${index + 1}`,
-          artist: "YouTube Track",
+          title: `Chanson #${index + 1}`,
+          artist: "YouTube Music",
           duration: "--:--",
           thumbnail: `https://img.youtube.com/vi/${id}/mqdefault.jpg`
         }));
@@ -760,7 +832,9 @@
     }
 
     function onPlayerStateChange(event) {
+      disableCaptions();
       const playIcon = document.querySelector('#play-pause-btn i');
+
       if (event.data === YT.PlayerState.PLAYING) {
         isPlaying = true;
         playIcon.className = 'fa-solid fa-pause';
@@ -776,12 +850,27 @@
     function updateNowPlayingInfo() {
       if (currentPlaylistTracks.length === 0) return;
 
-      const track = currentPlaylistTracks[currentTrackIndex] || currentPlaylistTracks[0];
       const ytData = player.getVideoData ? player.getVideoData() : null;
+      const duration = player.getDuration ? player.getDuration() : 0;
+      const track = currentPlaylistTracks[currentTrackIndex] || currentPlaylistTracks[0];
 
-      document.getElementById('song-title').textContent = (ytData && ytData.title) ? ytData.title : track.title;
-      document.getElementById('song-artist').textContent = (ytData && ytData.author) ? ytData.author : track.artist;
-      document.getElementById('cover-art').src = track.thumbnail;
+      // Mise à jour dynamique avec les vrais titres du lecteur
+      if (ytData && ytData.title && ytData.video_id) {
+        if (track) {
+          if (ytData.title) track.title = ytData.title;
+          if (ytData.author) track.artist = ytData.author;
+          if (duration > 0) track.duration = formatTime(duration);
+          track.thumbnail = `https://img.youtube.com/vi/${ytData.video_id}/hqdefault.jpg`;
+        }
+
+        document.getElementById('song-title').textContent = ytData.title;
+        document.getElementById('song-artist').textContent = ytData.author || 'Artiste YouTube';
+        document.getElementById('cover-art').src = `https://img.youtube.com/vi/${ytData.video_id}/hqdefault.jpg`;
+      } else if (track) {
+        document.getElementById('song-title').textContent = track.title;
+        document.getElementById('song-artist').textContent = track.artist;
+        document.getElementById('cover-art').src = track.thumbnail;
+      }
 
       const activeEl = document.getElementById(`track-item-${currentTrackIndex}`);
       if (activeEl) {
@@ -789,7 +878,7 @@
       }
     }
 
-    // 4. PROGRESSION & COMMANDES
+    // 4. BOUCLE DE PROGRESSION ET CONTRÔLES
     function startProgressLoop() {
       stopProgressLoop();
       progressTimer = setInterval(() => {
